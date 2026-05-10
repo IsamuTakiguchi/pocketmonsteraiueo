@@ -110,10 +110,6 @@ img { -webkit-user-drag: none; user-drag: none; }
   border-radius: 14px;
   box-shadow: var(--shadow);
   aspect-ratio: 1 / 1;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
   transition: transform 0.08s ease;
   font: inherit;
@@ -123,27 +119,28 @@ img { -webkit-user-drag: none; user-drag: none; }
 .kana-cell:active { transform: translateY(2px) scale(0.98); }
 
 .kana-cell .kana-text {
-  position: relative;
-  font-size: clamp(36px, 9vw, 56px);
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  font-size: clamp(26px, 6.5vw, 38px);
   color: var(--primary);
   line-height: 1;
   z-index: 2;
   text-shadow:
-    -2px -2px 0 #fff,
-     2px -2px 0 #fff,
-    -2px  2px 0 #fff,
-     2px  2px 0 #fff,
-     0 0 6px rgba(255,255,255,0.9);
+    -1px -1px 0 #fff,
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff;
 }
 
 .kana-cell .kana-thumb {
   position: absolute;
-  right: -2px;
-  bottom: -2px;
+  right: 0;
+  bottom: 0;
   width: 72%;
   height: 72%;
   object-fit: contain;
-  opacity: 0.95;
+  opacity: 1;
   z-index: 1;
   pointer-events: none;
 }
