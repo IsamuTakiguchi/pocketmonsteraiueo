@@ -123,21 +123,28 @@ img { -webkit-user-drag: none; user-drag: none; }
 .kana-cell:active { transform: translateY(2px) scale(0.98); }
 
 .kana-cell .kana-text {
-  font-size: clamp(28px, 7.5vw, 44px);
+  position: relative;
+  font-size: clamp(36px, 9vw, 56px);
   color: var(--primary);
   line-height: 1;
   z-index: 2;
-  text-shadow: 1px 1px 0 #fff;
+  text-shadow:
+    -2px -2px 0 #fff,
+     2px -2px 0 #fff,
+    -2px  2px 0 #fff,
+     2px  2px 0 #fff,
+     0 0 6px rgba(255,255,255,0.9);
 }
 
 .kana-cell .kana-thumb {
   position: absolute;
-  right: 2px;
-  bottom: 2px;
-  width: 46%;
-  height: 46%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
   object-fit: contain;
-  opacity: 0.95;
+  opacity: 0.92;
   z-index: 1;
   pointer-events: none;
 }
@@ -366,11 +373,19 @@ img { -webkit-user-drag: none; user-drag: none; }
   box-shadow: var(--shadow);
   font: inherit;
   font-weight: 700;
-  font-size: 38px;
   color: var(--blue);
   cursor: pointer;
   transition: transform 0.08s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 8px;
 }
+
+.choice-btn .choice-kana { font-size: 38px; line-height: 1; }
+.choice-btn .choice-name { font-size: 15px; line-height: 1.1; }
 
 .choice-btn:active { transform: translateY(2px); }
 .choice-btn.is-correct { background: var(--green); color: #fff; }
@@ -392,5 +407,7 @@ img { -webkit-user-drag: none; user-drag: none; }
   .kana-grid { gap: 6px; }
   .modal-image-wrap { width: 180px; height: 180px; }
   .quiz-image-wrap { width: 200px; height: 200px; }
-  .choice-btn { font-size: 32px; min-height: 64px; }
+  .choice-btn { min-height: 64px; }
+  .choice-btn .choice-kana { font-size: 32px; }
+  .choice-btn .choice-name { font-size: 13px; }
 }

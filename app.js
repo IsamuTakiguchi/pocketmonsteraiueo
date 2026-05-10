@@ -360,7 +360,10 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'choice-btn';
-      btn.textContent = kana;
+      const kanaSpan = document.createElement('span');
+      kanaSpan.className = 'choice-kana';
+      kanaSpan.textContent = kana;
+      btn.appendChild(kanaSpan);
       btn.addEventListener('click', () => onChoose(btn, kana));
       quizChoices.appendChild(btn);
     });
@@ -372,6 +375,11 @@
     if (kana === correct.kana) {
       quizState.locked = true;
       btn.classList.add('is-correct');
+      // 正解の選択肢にポケモン名を追加
+      const nameEl = document.createElement('span');
+      nameEl.className = 'choice-name';
+      nameEl.textContent = correct.pokemonName;
+      btn.appendChild(nameEl);
       quizFeedback.textContent = '⭕';
       quizFeedback.className = 'quiz-feedback correct';
       Array.from(quizChoices.children).forEach(b => (b.disabled = true));
