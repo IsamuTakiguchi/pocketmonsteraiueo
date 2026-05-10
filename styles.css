@@ -1,0 +1,393 @@
+:root {
+  --bg: #fff8e7;
+  --bg-card: #ffffff;
+  --primary: #ee1515;       /* ポケモンレッド */
+  --primary-dark: #b00d0d;
+  --accent: #ffcb05;        /* ピカチュウイエロー */
+  --blue: #3b4cca;          /* ポケモンブルー */
+  --green: #4caf50;
+  --shadow: 0 4px 0 rgba(0, 0, 0, 0.12);
+  --radius: 18px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: #333;
+  font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo",
+    -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  -webkit-text-size-adjust: 100%;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img { -webkit-user-drag: none; user-drag: none; }
+
+.app-header {
+  text-align: center;
+  padding: 18px 12px 8px;
+}
+
+.app-title {
+  font-size: clamp(24px, 6vw, 36px);
+  margin: 0 0 4px;
+  color: var(--primary);
+  text-shadow: 2px 2px 0 #fff, 4px 4px 0 var(--accent);
+  letter-spacing: 2px;
+}
+
+.app-sub {
+  margin: 0;
+  font-size: clamp(13px, 3.5vw, 16px);
+  color: #555;
+}
+
+/* タブ */
+.mode-tabs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 8px 12px;
+}
+
+.tab-btn {
+  flex: 1;
+  max-width: 220px;
+  min-height: 64px;
+  border: none;
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--shadow);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  color: #555;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+
+.tab-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.12); }
+
+.tab-btn.is-active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.tab-emoji { font-size: 22px; }
+.tab-label { font-size: 16px; }
+
+/* ビュー */
+.view {
+  padding: 12px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* 五十音表 */
+.kana-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.kana-grid-extra {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.kana-cell {
+  position: relative;
+  background: var(--bg-card);
+  border: none;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  aspect-ratio: 1 / 1;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+  font: inherit;
+  overflow: hidden;
+}
+
+.kana-cell:active { transform: translateY(2px) scale(0.98); }
+
+.kana-cell .kana-text {
+  font-size: clamp(28px, 7.5vw, 44px);
+  color: var(--primary);
+  line-height: 1;
+  z-index: 2;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+.kana-cell .kana-thumb {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 46%;
+  height: 46%;
+  object-fit: contain;
+  opacity: 0.95;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.kana-cell.is-empty { opacity: 0.35; cursor: default; }
+.kana-cell.is-empty:active { transform: none; }
+
+.section-title {
+  font-size: 18px;
+  margin: 22px 4px 8px;
+  color: var(--blue);
+}
+
+/* モーダル */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+  animation: fadein 0.18s ease;
+}
+
+@keyframes fadein { from { opacity: 0 } to { opacity: 1 } }
+
+.modal-card {
+  background: var(--bg-card);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 380px;
+  padding: 16px 16px 20px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: pop 0.25s cubic-bezier(.2,1.3,.5,1);
+}
+
+@keyframes pop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #eee;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modal-kana {
+  font-size: clamp(80px, 24vw, 140px);
+  color: var(--primary);
+  line-height: 1;
+  margin: 4px 0;
+  text-shadow: 3px 3px 0 var(--accent);
+}
+
+.modal-image-wrap {
+  width: 220px;
+  height: 220px;
+  margin: 6px auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.modal-pokename {
+  font-size: 22px;
+  margin: 6px 0 14px;
+  color: #333;
+}
+
+.modal-pokename .reading {
+  display: block;
+  font-size: 16px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.big-btn {
+  min-height: 56px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #333;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #c9a004;
+  transition: transform 0.08s ease;
+}
+
+.big-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #c9a004; }
+
+.speak-btn { background: var(--blue); color: #fff; box-shadow: 0 4px 0 #232c80; }
+.speak-btn:active { box-shadow: 0 2px 0 #232c80; }
+
+/* クイズ */
+.view-quiz { padding-top: 8px; }
+
+.quiz-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 6px 12px;
+}
+
+.quiz-stars {
+  font-size: 20px;
+  font-weight: 700;
+  color: #b07900;
+  background: #fff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+}
+
+.quiz-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.quiz-range input { width: 18px; height: 18px; }
+
+.quiz-card {
+  background: var(--bg-card);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+  text-align: center;
+}
+
+.quiz-question {
+  font-size: clamp(15px, 4.2vw, 18px);
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.quiz-image-wrap {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-image-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.quiz-feedback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 130px;
+  font-weight: 900;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.quiz-feedback.correct {
+  color: var(--green);
+  animation: pop 0.4s ease forwards;
+}
+
+.quiz-feedback.wrong {
+  color: var(--primary);
+  animation: shake 0.5s ease forwards;
+}
+
+@keyframes shake {
+  0%   { opacity: 1; transform: translateX(0); }
+  25%  { transform: translateX(-12px); }
+  50%  { transform: translateX(12px); }
+  75%  { transform: translateX(-8px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.quiz-choices {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 6px 0 12px;
+}
+
+.choice-btn {
+  min-height: 72px;
+  border: none;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  font: inherit;
+  font-weight: 700;
+  font-size: 38px;
+  color: var(--blue);
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+
+.choice-btn:active { transform: translateY(2px); }
+.choice-btn.is-correct { background: var(--green); color: #fff; }
+.choice-btn.is-wrong   { background: var(--primary); color: #fff; }
+.choice-btn:disabled   { cursor: default; }
+
+.next-btn {
+  background: var(--green);
+  color: #fff;
+  box-shadow: 0 4px 0 #2e7d32;
+  margin-top: 4px;
+  min-width: 180px;
+}
+
+.next-btn:active { box-shadow: 0 2px 0 #2e7d32; }
+
+/* スマホ最適化 */
+@media (max-width: 380px) {
+  .kana-grid { gap: 6px; }
+  .modal-image-wrap { width: 180px; height: 180px; }
+  .quiz-image-wrap { width: 200px; height: 200px; }
+  .choice-btn { font-size: 32px; min-height: 64px; }
+}

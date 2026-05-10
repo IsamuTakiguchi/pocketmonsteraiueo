@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ポケモンであいうえお</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">ぽけもんで あいうえお</h1>
+    <p class="app-sub">ポケモンと いっしょに ひらがなを おぼえよう！</p>
+  </header>
+
+  <nav class="mode-tabs" role="tablist" aria-label="モード">
+    <button class="tab-btn is-active" data-mode="table" role="tab" aria-selected="true">
+      <span class="tab-emoji">📖</span>
+      <span class="tab-label">ごじゅうおんひょう</span>
+    </button>
+    <button class="tab-btn" data-mode="quiz" role="tab" aria-selected="false">
+      <span class="tab-emoji">🎮</span>
+      <span class="tab-label">クイズ</span>
+    </button>
+  </nav>
+
+  <main>
+    <!-- 五十音表モード -->
+    <section id="view-table" class="view view-table">
+      <div id="kana-grid" class="kana-grid" aria-label="清音"></div>
+      <h2 class="section-title">だくおん（てんてん）</h2>
+      <div id="kana-grid-dakuon" class="kana-grid kana-grid-extra" aria-label="濁音"></div>
+      <h2 class="section-title">はんだくおん（まる）</h2>
+      <div id="kana-grid-handakuon" class="kana-grid kana-grid-extra" aria-label="半濁音"></div>
+    </section>
+
+    <!-- クイズモード -->
+    <section id="view-quiz" class="view view-quiz" hidden>
+      <div class="quiz-bar">
+        <div class="quiz-stars" id="quiz-stars" aria-live="polite">⭐ <span id="star-count">0</span></div>
+        <label class="quiz-range">
+          <input type="checkbox" id="quiz-include-extra" />
+          <span>だくおんも いれる</span>
+        </label>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-question">この ポケモンは どの もじから はじまるかな？</div>
+        <div class="quiz-image-wrap">
+          <img id="quiz-image" alt="ポケモン" />
+          <div id="quiz-feedback" class="quiz-feedback" aria-live="polite"></div>
+        </div>
+        <div id="quiz-choices" class="quiz-choices" role="group" aria-label="こたえ"></div>
+        <button id="quiz-next" class="big-btn next-btn" hidden>つぎへ ▶</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- 詳細モーダル -->
+  <div id="detail-modal" class="modal" hidden aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <button id="modal-close" class="modal-close" aria-label="とじる">✕</button>
+      <div class="modal-kana" id="modal-kana"></div>
+      <div class="modal-image-wrap">
+        <img id="modal-image" alt="ポケモン" />
+      </div>
+      <div class="modal-pokename" id="modal-pokename"></div>
+      <button id="modal-speak" class="big-btn speak-btn">🔊 もういちど</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
