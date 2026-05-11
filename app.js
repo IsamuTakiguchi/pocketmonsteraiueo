@@ -402,6 +402,15 @@
     if (quizState.locked || quizState.animating) return;
     const correct = quizState.current;
     const isCorrect = kana === correct.kana;
+
+    // 音声はクリック直後に発話（ユーザージェスチャー直後でないと
+    // Chromeなどで無音になる場合があるため、アニメーション開始前に呼ぶ）
+    if (isCorrect) {
+      speak(`ゲットだぜ！ ${correct.kana}！ ${correct.reading}！`);
+    } else {
+      speak('もういちど！', { pitch: 1.25, rate: 1.1 });
+    }
+
     quizState.animating = true;
     Array.from(quizChoices.children).forEach(b => (b.disabled = true));
 
@@ -420,7 +429,6 @@
       quizFeedback.className = 'quiz-feedback correct';
       setStars(getStars() + 1);
       playCorrect();
-      speak(`ゲットだぜ！ ${correct.kana}！ ${correct.reading}！`);
       quizState.locked = true;
       quizState.animating = false;
       quizNext.hidden = false;
@@ -432,7 +440,6 @@
       quizFeedback.textContent = '❌';
       quizFeedback.className = 'quiz-feedback wrong';
       playWrong();
-      speak('もういちど！', { pitch: 1.25, rate: 1.1 });
       // 他の選択肢を再度有効化（押し間違えた1個だけは disabled のまま）
       Array.from(quizChoices.children).forEach(b => {
         if (!b.classList.contains('is-wrong')) b.disabled = false;
