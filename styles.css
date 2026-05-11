@@ -273,11 +273,28 @@ img { -webkit-user-drag: none; user-drag: none; }
 .quiz-stars {
   font-size: 20px;
   font-weight: 700;
-  color: #b07900;
+  color: #333;
   background: #fff;
   padding: 6px 14px;
   border-radius: 999px;
   box-shadow: var(--shadow);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* モンスターボールアイコン（スコア用） */
+.ball-icon {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, #fff 0 4px, #222 4px 6px, transparent 6px),
+    linear-gradient(to bottom, #ee1515 0 48%, #222 48% 56%, #fff 56% 100%);
+  border: 2px solid #222;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .quiz-range {
@@ -322,6 +339,84 @@ img { -webkit-user-drag: none; user-drag: none; }
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  transition: opacity 0.2s ease;
+}
+
+/* モンスターボール（投げる用） */
+.poke-ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border-radius: 50%;
+  background:
+    linear-gradient(to bottom, #ee1515 0 48%, #222 48% 56%, #fff 56% 100%);
+  border: 3px solid #222;
+  box-shadow: inset -6px -6px 12px rgba(0,0,0,0.25), 0 4px 8px rgba(0,0,0,0.25);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.poke-ball[hidden] { display: none; }
+
+.poke-ball-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #222;
+  box-sizing: border-box;
+}
+
+/* 投げるアニメーション（下から飛んでくる、回転しながら） */
+.poke-ball.throw {
+  animation: ball-throw 0.55s cubic-bezier(.3,.7,.4,1) forwards;
+}
+@keyframes ball-throw {
+  0%   { transform: translate(0, 220px) scale(0.3) rotate(0); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: translate(0, 0)     scale(1)   rotate(720deg); opacity: 1; }
+}
+
+/* 捕獲時の揺れアニメーション */
+.poke-ball.wiggle {
+  animation: ball-wiggle 1.1s ease-in-out forwards;
+}
+@keyframes ball-wiggle {
+  0%   { transform: rotate(0); }
+  15%  { transform: rotate(-22deg); }
+  30%  { transform: rotate(22deg); }
+  45%  { transform: rotate(-18deg); }
+  60%  { transform: rotate(18deg); }
+  75%  { transform: rotate(-10deg); }
+  90%  { transform: rotate(10deg); }
+  100% { transform: rotate(0); }
+}
+
+/* ハズレ時の弾かれアニメーション */
+.poke-ball.miss {
+  animation: ball-miss 0.7s ease-in forwards;
+}
+@keyframes ball-miss {
+  0%   { transform: translate(0, 0)        scale(1)   rotate(0); opacity: 1; }
+  40%  { transform: translate(60px, -30px) scale(1)   rotate(180deg); opacity: 1; }
+  100% { transform: translate(180px, 240px) scale(0.5) rotate(720deg); opacity: 0; }
+}
+
+/* 捕獲時にポケモンが縮んで吸い込まれる */
+.quiz-image-wrap.captured img {
+  animation: shrink-into-ball 0.35s ease-in forwards;
+}
+@keyframes shrink-into-ball {
+  0%   { transform: scale(1);    opacity: 1; }
+  60%  { transform: scale(0.4);  opacity: 0.5; }
+  100% { transform: scale(0.05); opacity: 0; }
 }
 
 .quiz-feedback {

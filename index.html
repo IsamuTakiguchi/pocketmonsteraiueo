@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ポケモンであいうえお</title>
-  <link rel="stylesheet" href="styles.css?v=3" />
+  <link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
   <header class="app-header">
@@ -36,7 +36,7 @@
     <!-- クイズモード -->
     <section id="view-quiz" class="view view-quiz" hidden>
       <div class="quiz-bar">
-        <div class="quiz-stars" id="quiz-stars" aria-live="polite">⭐ <span id="star-count">0</span></div>
+        <div class="quiz-stars" id="quiz-stars" aria-live="polite"><span class="ball-icon" aria-hidden="true"></span> <span id="star-count">0</span></div>
         <label class="quiz-range">
           <input type="checkbox" id="quiz-include-extra" />
           <span>だくおんも いれる</span>
@@ -44,8 +44,11 @@
       </div>
       <div class="quiz-card">
         <div class="quiz-question">この ポケモンは どの もじから はじまるかな？</div>
-        <div class="quiz-image-wrap">
+        <div id="quiz-image-wrap" class="quiz-image-wrap">
           <img id="quiz-image" alt="ポケモン" />
+          <div id="poke-ball" class="poke-ball" hidden aria-hidden="true">
+            <span class="poke-ball-button"></span>
+          </div>
           <div id="quiz-feedback" class="quiz-feedback" aria-live="polite"></div>
         </div>
         <div id="quiz-choices" class="quiz-choices" role="group" aria-label="こたえ"></div>
@@ -67,6 +70,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

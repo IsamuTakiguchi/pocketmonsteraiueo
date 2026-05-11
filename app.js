@@ -145,14 +145,15 @@
     };
   }
 
-  function speak(text) {
+  function speak(text, opts) {
     if (!('speechSynthesis' in window)) return;
     try {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'ja-JP';
-      u.rate = 0.9;
-      u.pitch = 1.1;
+      // サトシのような高めで元気な声
+      u.rate  = (opts && opts.rate)  != null ? opts.rate  : 1.05;
+      u.pitch = (opts && opts.pitch) != null ? opts.pitch : 1.7;
       if (!jaVoice) jaVoice = pickJapaneseVoice();
       if (jaVoice) u.voice = jaVoice;
       window.speechSynthesis.speak(u);
@@ -288,14 +289,56 @@
   });
 
   // ========== クイズモード ==========
+  const quizImageWrap = document.getElementById('quiz-image-wrap');
   const quizImage    = document.getElementById('quiz-image');
   const quizChoices  = document.getElementById('quiz-choices');
   const quizFeedback = document.getElementById('quiz-feedback');
   const quizNext     = document.getElementById('quiz-next');
   const includeExtra = document.getElementById('quiz-include-extra');
   const starCountEl  = document.getElementById('star-count');
+  const pokeBall     = document.getElementById('poke-ball');
 
-  const quizState = { current: null, locked: false };
+  const quizState = { current: null, locked: false, animating: false };
+
+  // ========== モンスターボール演出 ==========
+  function wait(ms) {
+    return new Promise(r => setTimeout(r, ms));
+  }
+
+  function resetBall() {
+    pokeBall.hidden = true;
+    pokeBall.className = 'poke-ball';
+    quizImageWrap.classList.remove('captured');
+    quizImage.style.opacity = '';
+    quizImage.style.transform = '';
+  }
+
+  async function throwBall() {
+    resetBall();
+    // reflow to restart animation
+    void pokeBall.offsetWidth;
+    pokeBall.hidden = false;
+    pokeBall.classList.add('throw');
+    await wait(560);
+  }
+
+  async function captureSequence() {
+    // ボールはその場で揺れ、ポケモンは縮んで吸い込まれる
+    pokeBall.classList.remove('throw');
+    void pokeBall.offsetWidth;
+    pokeBall.classList.add('wiggle');
+    quizImageWrap.classList.add('captured');
+    await wait(1100);
+  }
+
+  async function missSequence() {
+    pokeBall.classList.remove('throw');
+    void pokeBall.offsetWidth;
+    pokeBall.classList.add('miss');
+    await wait(700);
+    pokeBall.hidden = true;
+    pokeBall.className = 'poke-ball';
+  }
 
   // ★を localStorage で永続化
   const STAR_KEY = 'pokemon_aiueo_stars';
@@ -346,6 +389,9 @@
 
     quizState.current = correct;
     quizState.locked = false;
+    quizState.animating = false;
+
+    resetBall();
 
     quizImage.src = artworkUrl(correct.pokemonId);
     quizImage.alt = correct.pokemonName;
@@ -369,38 +415,52 @@
     });
   }
 
-  function onChoose(btn, kana) {
-    if (quizState.locked) return;
+  async function onChoose(btn, kana) {
+    if (quizState.locked || quizState.animating) return;
     const correct = quizState.current;
-    if (kana === correct.kana) {
-      quizState.locked = true;
+    const isCorrect = kana === correct.kana;
+    quizState.animating = true;
+    Array.from(quizChoices.children).forEach(b => (b.disabled = true));
+
+    // モンスターボールを投げる
+    await throwBall();
+
+    if (isCorrect) {
+      // 捕獲：ポケモンが縮んでボールに吸い込まれ、ボールが揺れる
       btn.classList.add('is-correct');
-      // 正解の選択肢にポケモン名を追加
       const nameEl = document.createElement('span');
       nameEl.className = 'choice-name';
       nameEl.textContent = correct.pokemonName;
       btn.appendChild(nameEl);
+      await captureSequence();
       quizFeedback.textContent = '⭕';
       quizFeedback.className = 'quiz-feedback correct';
-      Array.from(quizChoices.children).forEach(b => (b.disabled = true));
       setStars(getStars() + 1);
       playCorrect();
-      speak(`せいかい！ ${correct.kana}！ ${correct.reading}！`);
+      speak(`ゲットだぜ！ ${correct.kana}！ ${correct.reading}！`);
+      quizState.locked = true;
+      quizState.animating = false;
       quizNext.hidden = false;
     } else {
+      // ハズレ：ボールが弾かれる
       btn.classList.add('is-wrong');
       btn.disabled = true;
+      await missSequence();
       quizFeedback.textContent = '❌';
       quizFeedback.className = 'quiz-feedback wrong';
       playWrong();
-      speak('もういちど！');
-      // フィードバックは少し遅れて消す
+      speak('もういちど！', { pitch: 1.8, rate: 1.1 });
+      // 他の選択肢を再度有効化（押し間違えた1個だけは disabled のまま）
+      Array.from(quizChoices.children).forEach(b => {
+        if (!b.classList.contains('is-wrong')) b.disabled = false;
+      });
+      quizState.animating = false;
       setTimeout(() => {
         if (!quizState.locked) {
           quizFeedback.className = 'quiz-feedback';
           quizFeedback.textContent = '';
         }
-      }, 700);
+      }, 900);
     }
   }
 
