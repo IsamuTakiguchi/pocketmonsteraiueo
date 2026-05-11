@@ -403,13 +403,8 @@
     const correct = quizState.current;
     const isCorrect = kana === correct.kana;
 
-    // 音声はクリック直後に発話（ユーザージェスチャー直後でないと
-    // Chromeなどで無音になる場合があるため、アニメーション開始前に呼ぶ）
-    if (isCorrect) {
-      speak(`ゲットだぜ！ ${correct.kana}！ ${correct.reading}！`);
-    } else {
-      speak('もういちど！', { pitch: 1.25, rate: 1.1 });
-    }
+    // ユーザージェスチャーを維持するため、空発話で speech synth をプライム
+    primeSpeech();
 
     quizState.animating = true;
     Array.from(quizChoices.children).forEach(b => (b.disabled = true));
@@ -428,6 +423,8 @@
       quizFeedback.textContent = '⭕';
       quizFeedback.className = 'quiz-feedback correct';
       setStars(getStars() + 1);
+      // speech を先に呼ぶ（Web Audio より前）。これでブラウザによる無音化を回避
+      speak(`ゲットだぜ！ ${correct.kana}！ ${correct.reading}！`);
       playCorrect();
       quizState.locked = true;
       quizState.animating = false;
@@ -439,6 +436,7 @@
       await missSequence();
       quizFeedback.textContent = '❌';
       quizFeedback.className = 'quiz-feedback wrong';
+      speak('もういちど！', { pitch: 1.25, rate: 1.1 });
       playWrong();
       // 他の選択肢を再度有効化（押し間違えた1個だけは disabled のまま）
       Array.from(quizChoices.children).forEach(b => {
@@ -452,6 +450,17 @@
         }
       }, 900);
     }
+  }
+
+  // ユーザージェスチャー直後に空発話を流して synth を起こしておく
+  function primeSpeech() {
+    if (!('speechSynthesis' in window)) return;
+    try {
+      const u = new SpeechSynthesisUtterance(' ');
+      u.lang = 'ja-JP';
+      u.volume = 0;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
   }
 
   quizNext.addEventListener('click', () => nextQuiz());
