@@ -129,38 +129,20 @@
   }
 
   // ========== 音声読み上げ（Web Speech API） ==========
-  let jaVoice = null;
-  function pickJapaneseVoice() {
-    if (!('speechSynthesis' in window)) return null;
-    const voices = window.speechSynthesis.getVoices();
-    return voices.find(v => /ja(-|_)JP/i.test(v.lang)) ||
-           voices.find(v => /Japanese/i.test(v.name)) ||
-           null;
-  }
-
-  if ('speechSynthesis' in window) {
-    pickJapaneseVoice();
-    window.speechSynthesis.onvoiceschanged = () => {
-      jaVoice = pickJapaneseVoice();
-    };
-  }
+  // u.lang = 'ja-JP' でブラウザに任せる方式（明示的なvoice指定は不要）
 
   function speak(text, opts) {
     if (!('speechSynthesis' in window) || !text) return;
-    try { window.speechSynthesis.cancel(); } catch (e) {}
-    // Chrome では cancel 直後の speak が無音になることがあるので少し遅延
-    setTimeout(() => {
-      try {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang   = 'ja-JP';
-        u.volume = 1;
-        u.rate   = (opts && opts.rate)  != null ? opts.rate  : 1.05;
-        u.pitch  = (opts && opts.pitch) != null ? opts.pitch : 1.15;
-        if (!jaVoice) jaVoice = pickJapaneseVoice();
-        if (jaVoice) u.voice = jaVoice;
-        window.speechSynthesis.speak(u);
-      } catch (e) {}
-    }, 50);
+    try {
+      const synth = window.speechSynthesis;
+      if (synth.speaking || synth.pending) synth.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang   = 'ja-JP';
+      u.volume = 1;
+      u.rate   = (opts && opts.rate)  != null ? opts.rate  : 1.05;
+      u.pitch  = (opts && opts.pitch) != null ? opts.pitch : 1.15;
+      synth.speak(u);
+    } catch (e) {}
   }
 
   function buildSpeechText(entry) {
