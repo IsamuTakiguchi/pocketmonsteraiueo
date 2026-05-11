@@ -146,20 +146,21 @@
   }
 
   function speak(text, opts) {
-    if (!('speechSynthesis' in window)) return;
-    try {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'ja-JP';
-      // 少しだけ高めで元気な声（サトシのテンション）
-      u.rate  = (opts && opts.rate)  != null ? opts.rate  : 1.1;
-      u.pitch = (opts && opts.pitch) != null ? opts.pitch : 1.2;
-      if (!jaVoice) jaVoice = pickJapaneseVoice();
-      if (jaVoice) u.voice = jaVoice;
-      window.speechSynthesis.speak(u);
-    } catch (e) {
-      // 何もしない
-    }
+    if (!('speechSynthesis' in window) || !text) return;
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+    // Chrome では cancel 直後の speak が無音になることがあるので少し遅延
+    setTimeout(() => {
+      try {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang   = 'ja-JP';
+        u.volume = 1;
+        u.rate   = (opts && opts.rate)  != null ? opts.rate  : 1.05;
+        u.pitch  = (opts && opts.pitch) != null ? opts.pitch : 1.15;
+        if (!jaVoice) jaVoice = pickJapaneseVoice();
+        if (jaVoice) u.voice = jaVoice;
+        window.speechSynthesis.speak(u);
+      } catch (e) {}
+    }, 50);
   }
 
   function buildSpeechText(entry) {
@@ -472,15 +473,14 @@
   renderKanaGrid(document.getElementById('kana-grid-dakuon'),  DAKUON);
   renderKanaGrid(document.getElementById('kana-grid-handakuon'), HANDAKUON);
 
-  // 初回タップで音声合成・AudioContextを起こす（モバイルブラウザ対策）
+  // 初回タップで AudioContext を起こす（モバイルブラウザ対策）
   document.body.addEventListener('pointerdown', function warmup() {
     try {
       const ctx = getAudioCtx();
       if (ctx && ctx.state === 'suspended') ctx.resume();
       if ('speechSynthesis' in window) {
-        const u = new SpeechSynthesisUtterance('');
-        u.volume = 0;
-        window.speechSynthesis.speak(u);
+        // voicesリストを初期化（無音）
+        window.speechSynthesis.getVoices();
       }
     } catch (e) {}
     document.body.removeEventListener('pointerdown', warmup);
