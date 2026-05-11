@@ -151,9 +151,9 @@
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'ja-JP';
-      // サトシのような高めで元気な声
-      u.rate  = (opts && opts.rate)  != null ? opts.rate  : 1.05;
-      u.pitch = (opts && opts.pitch) != null ? opts.pitch : 1.7;
+      // 少しだけ高めで元気な声（サトシのテンション）
+      u.rate  = (opts && opts.rate)  != null ? opts.rate  : 1.1;
+      u.pitch = (opts && opts.pitch) != null ? opts.pitch : 1.2;
       if (!jaVoice) jaVoice = pickJapaneseVoice();
       if (jaVoice) u.voice = jaVoice;
       window.speechSynthesis.speak(u);
@@ -449,7 +449,7 @@
       quizFeedback.textContent = '❌';
       quizFeedback.className = 'quiz-feedback wrong';
       playWrong();
-      speak('もういちど！', { pitch: 1.8, rate: 1.1 });
+      speak('もういちど！', { pitch: 1.25, rate: 1.1 });
       // 他の選択肢を再度有効化（押し間違えた1個だけは disabled のまま）
       Array.from(quizChoices.children).forEach(b => {
         if (!b.classList.contains('is-wrong')) b.disabled = false;
