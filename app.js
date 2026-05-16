@@ -107,6 +107,20 @@
     { kana: 'ぽ', pokemonId: 16,  pokemonName: 'ポッポ',     reading: 'ぽっぽ' },
   ];
 
+  // ========== ひらがな／カタカナ切り替え ==========
+  const SCRIPT_KEY = 'pokemon_aiueo_script';
+  let currentScript = localStorage.getItem(SCRIPT_KEY) || 'hiragana';
+
+  function toKatakana(s) {
+    // U+3041〜U+3096 のひらがなを、対応するカタカナ（+0x60）に変換
+    return s.replace(/[ぁ-ゖ]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
+  }
+
+  function displayKana(kana) {
+    if (!kana || kana === '　') return '';
+    return currentScript === 'katakana' ? toKatakana(kana) : kana;
+  }
+
   // ========== 画像URL ==========
   function artworkUrl(id) {
     return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
@@ -192,7 +206,7 @@
 
       const span = document.createElement('span');
       span.className = 'kana-text';
-      span.textContent = entry.kana && entry.kana !== '　' ? entry.kana : '';
+      span.textContent = displayKana(entry.kana);
       cell.appendChild(span);
 
       if (entry.pokemonId != null) {
@@ -226,7 +240,7 @@
 
   function openDetail(entry) {
     currentEntry = entry;
-    modalKana.textContent = entry.kana;
+    modalKana.textContent = displayKana(entry.kana);
     modalImage.src = artworkUrl(entry.pokemonId);
     attachImgFallback(modalImage, entry.pokemonId);
     modalName.innerHTML = `${entry.pokemonName}<span class="reading">${entry.reading}</span>`;
@@ -391,7 +405,7 @@
       btn.className = 'choice-btn';
       const kanaSpan = document.createElement('span');
       kanaSpan.className = 'choice-kana';
-      kanaSpan.textContent = kana;
+      kanaSpan.textContent = displayKana(kana);
       btn.appendChild(kanaSpan);
       btn.addEventListener('click', () => onChoose(btn, kana));
       quizChoices.appendChild(btn);
@@ -466,10 +480,39 @@
   quizNext.addEventListener('click', () => nextQuiz());
   includeExtra.addEventListener('change', () => nextQuiz());
 
+  // ========== ひらがな／カタカナトグル ==========
+  const scriptBtns = document.querySelectorAll('.script-btn');
+  function refreshScriptButtons() {
+    scriptBtns.forEach(b => {
+      const active = b.dataset.script === currentScript;
+      b.classList.toggle('is-active', active);
+      b.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+  }
+  function renderAllGrids() {
+    renderKanaGrid(document.getElementById('kana-grid'),           SEION);
+    renderKanaGrid(document.getElementById('kana-grid-dakuon'),    DAKUON);
+    renderKanaGrid(document.getElementById('kana-grid-handakuon'), HANDAKUON);
+  }
+  scriptBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.script === currentScript) return;
+      currentScript = btn.dataset.script;
+      localStorage.setItem(SCRIPT_KEY, currentScript);
+      refreshScriptButtons();
+      renderAllGrids();
+      // クイズが表示中なら問題を作り直して選択肢の表記も更新
+      if (!viewQuiz.hidden) nextQuiz();
+      // 詳細モーダルが開いていれば文字も更新
+      if (!modal.hidden && currentEntry) {
+        modalKana.textContent = displayKana(currentEntry.kana);
+      }
+    });
+  });
+  refreshScriptButtons();
+
   // ========== 起動 ==========
-  renderKanaGrid(document.getElementById('kana-grid'),         SEION);
-  renderKanaGrid(document.getElementById('kana-grid-dakuon'),  DAKUON);
-  renderKanaGrid(document.getElementById('kana-grid-handakuon'), HANDAKUON);
+  renderAllGrids();
 
   // 初回タップで AudioContext を起こす（モバイルブラウザ対策）
   document.body.addEventListener('pointerdown', function warmup() {

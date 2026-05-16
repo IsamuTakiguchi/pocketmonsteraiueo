@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ポケモンであいうえお</title>
-  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="styles.css?v=5" />
 </head>
 <body>
   <header class="app-header">
@@ -22,6 +22,11 @@
       <span class="tab-label">クイズ</span>
     </button>
   </nav>
+
+  <div class="script-toggle" role="tablist" aria-label="もじのしゅるい">
+    <button class="script-btn is-active" data-script="hiragana" role="tab" aria-selected="true">ひらがな</button>
+    <button class="script-btn" data-script="katakana" role="tab" aria-selected="false">カタカナ</button>
+  </div>
 
   <main>
     <!-- 五十音表モード -->
@@ -70,6 +75,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>
